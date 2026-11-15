@@ -1,0 +1,773 @@
+<!-- ... existing code ... -->
+            <!-- Actions / Cart / Admin Toggle Icon -->
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleAdminModal()" class="relative p-2.5 rounded-full hover:bg-pink-100/60 text-gray-700 transition-colors flex items-center justify-center shadow-xs bg-purple-50" title="Store Manager & Orders">
+                    <i class="fa-solid fa-crown text-xl text-purple-600 animate-pulse"></i>
+                    <span id="orderBadge" class="absolute -top-1 -right-1 bg-purple-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+                </button>
+                <button onclick="toggleWishlistModal()" class="relative p-2.5 rounded-full hover:bg-pink-100/60 text-gray-700 transition-colors hidden sm:flex items-center justify-center" title="Wishlist">
+                    <i class="fa-solid fa-heart text-xl text-pink-400"></i>
+                    <span id="wishlistCount" class="absolute -top-1 -right-1 bg-pink-400 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+                </button>
+                <button onclick="toggleCartDrawer()" class="relative bg-pink-400 hover:bg-pink-500 text-white px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all flex items-center space-x-2">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="font-display font-medium hidden sm:inline">Cart</span>
+                    <span id="cartCount" class="bg-white text-pink-500 text-xs px-2 py-0.5 rounded-full font-bold shadow-sm">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Search Bar -->
+<!-- ... existing code ... -->
+        <!-- Product Grid -->
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Dynamically populated via JavaScript -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-20">
+            <div class="text-6xl mb-4">😿</div>
+            <h4 class="text-xl font-display font-bold text-gray-700">No kawaii products found</h4>
+            <p class="text-gray-500 text-sm mt-1">Try checking your spelling or selecting another character filter.</p>
+            <button onclick="filterCategory('All')" class="mt-6 bg-pink-400 text-white font-display px-6 py-2 rounded-full shadow-md hover:bg-pink-500 transition-all">
+                Reset Filters
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Store Owner Management & Orders Modal -->
+    <div id="adminModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl transform scale-95 transition-transform duration-300 overflow-hidden">
+            <!-- Header -->
+            <div class="p-6 border-b border-purple-100 flex items-center justify-between bg-purple-50">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center text-purple-700 text-xl">
+                        👑
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-xl text-gray-800">Store Owner Studio</h3>
+                        <p class="text-xs text-gray-500">Manage Products & View Customer Orders</p>
+                    </div>
+                </div>
+                <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-gray-600 text-xl p-2">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Tabs header -->
+            <div class="flex border-b border-gray-200 bg-gray-50 px-6 pt-2 space-x-4">
+                <button onclick="switchAdminTab('orders')" id="adminTabOrders" class="pb-3 text-sm font-display font-bold text-purple-600 border-b-2 border-purple-600 transition-all">
+                    📦 Customer Orders (<span id="adminOrderCount">0</span>)
+                </button>
+                <button onclick="switchAdminTab('products')" id="adminTabProducts" class="pb-3 text-sm font-display font-semibold text-gray-500 hover:text-gray-800 transition-all">
+                    ✏️ Edit / Add Products & Pictures
+                </button>
+            </div>
+
+            <!-- Tab 1: Customer Orders View -->
+            <div id="adminPanelOrders" class="p-6 overflow-y-auto flex-grow space-y-6">
+                <!-- Dynamically populated customer orders -->
+            </div>
+
+            <!-- Tab 2: Products Manager View -->
+            <div id="adminPanelProducts" class="p-6 overflow-y-auto flex-grow space-y-6 hidden">
+                <div class="flex justify-between items-center bg-purple-50/60 p-4 rounded-2xl border border-purple-100">
+                    <div>
+                        <h4 class="font-display font-bold text-gray-800 text-sm">Add New Kawaii Item</h4>
+                        <p class="text-xs text-gray-500">Create a new product with custom photo URL instantly</p>
+                    </div>
+                    <button onclick="openNewProductForm()" class="bg-purple-600 hover:bg-purple-700 text-white font-display text-xs px-4 py-2 rounded-xl shadow-xs">
+                        + Add New Item
+                    </button>
+                </div>
+                <div id="adminProductList" class="space-y-3">
+                    <!-- Product list for editing -->
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+                <button onclick="clearAllOrders()" class="text-xs text-red-500 hover:text-red-700 font-semibold px-4 py-2">
+                    <i class="fa-solid fa-trash-can mr-1"></i> Clear Orders History
+                </button>
+                <button onclick="toggleAdminModal()" class="bg-purple-600 hover:bg-purple-700 text-white text-sm font-display px-6 py-2 rounded-xl">
+                    Close Studio
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Edit/Add Modal (Inside Admin) -->
+    <div id="editProductModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="editModalTitle" class="text-2xl font-display font-bold text-gray-800">Edit Product</h3>
+                <button onclick="closeEditProductModal()" class="text-gray-400 hover:text-gray-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="editProductForm" onsubmit="saveProductChanges(event)" class="space-y-4">
+                <input type="hidden" id="editProdId">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Product Name</label>
+                    <input type="text" id="editProdName" required class="w-full bg-pink-50/50 border border-pink-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Character / Category</label>
+                        <select id="editProdCategory" class="w-full bg-pink-50/50 border border-pink-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <option value="Hello Kitty">Hello Kitty</option>
+                            <option value="Cinnamoroll">Cinnamoroll</option>
+                            <option value="Kuromi">Kuromi</option>
+                            <option value="My Melody">My Melody</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Price ($)</label>
+                        <input type="number" step="0.01" id="editProdPrice" required class="w-full bg-pink-50/50 border border-pink-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Image URL (or leave emoji fallback)</label>
+                    <input type="text" id="editProdImg" placeholder="https://example.com/image.jpg" class="w-full bg-pink-50/50 border border-pink-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    <p class="text-xs text-gray-400 mt-1">Paste a direct image web link, or leave blank to use the emoji icon below.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Emoji Fallback Icon</label>
+                    <input type="text" id="editProdEmoji" required value="🎀" class="w-full bg-pink-50/50 border border-pink-200 rounded-xl px-4 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-pink-300">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Description</label>
+                    <textarea id="editProdDesc" required rows="2" class="w-full bg-pink-50/50 border border-pink-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-display py-3 rounded-xl shadow-md transition-all mt-4">
+                    Save Product ✨
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+<!-- ... existing code ... -->
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Product Database
+        let products = [
+            {
+                id: 1,
+                name: "Hello Kitty Classic 12\" Plush",
+                category: "Hello Kitty",
+                type: "Plushies",
+                price: 28.99,
+                rating: 4.9,
+                reviews: 142,
+                emoji: "🐱",
+                img: "",
+                featured: true,
+                desc: "The iconic Hello Kitty in her signature red bow and blue overalls. Crafted with ultra-soft marshmallow plush fabric."
+            },
+            {
+                id: 2,
+                name: "Cinnamoroll Fluffy Cloud Pillow",
+                category: "Cinnamoroll",
+                type: "Plushies",
+                price: 34.50,
+                rating: 5.0,
+                reviews: 210,
+                emoji: "☁️",
+                img: "",
+                featured: true,
+                desc: "Super soft Cinnamoroll plush pillow with long floppy ears and rosy cheeks. Perfect for cozy bedroom decor."
+            },
+            {
+                id: 3,
+                name: "Kuromi Gothic Velvet Hoodie",
+                category: "Kuromi",
+                type: "Apparel",
+                price: 49.99,
+                rating: 4.8,
+                reviews: 95,
+                emoji: "🖤",
+                img: "",
+                featured: true,
+                desc: "Stylish pastel goth hoodie featuring Kuromi's skull emblem and devil-wing hood accents. Stay cozy and edgy!"
+            },
+            {
+                id: 4,
+                name: "My Melody Strawberry Pajama Set",
+                category: "My Melody",
+                type: "Apparel",
+                price: 42.00,
+                rating: 4.9,
+                reviews: 118,
+                emoji: "🌸",
+                img: "",
+                featured: false,
+                desc: "Cozy pink cotton pajama set adorned with My Melody and sweet strawberries. Soft and breathable for sweet dreams."
+            },
+            {
+                id: 5,
+                name: "Pompompurin Beret Plushie",
+                category: "Others",
+                type: "Plushies",
+                price: 26.99,
+                rating: 4.7,
+                reviews: 84,
+                emoji: "🍮",
+                img: "",
+                featured: true,
+                desc: "Everyone's favorite golden retriever pudding dog wearing his signature brown beret. Irresistibly squishy!"
+            },
+            {
+                id: 6,
+                name: "Sanrio Pastel Aesthetic Stationery Set",
+                category: "Hello Kitty",
+                type: "Stationery",
+                price: 18.50,
+                rating: 4.9,
+                reviews: 302,
+                emoji: "✏️",
+                img: "",
+                featured: true,
+                desc: "Complete 15-piece stationery kit including gel pens, sticky notes, washi tape, and a cute spiral notebook featuring all friends."
+            },
+            {
+                id: 7,
+                name: "Keroppi Lilypad Umbrella Keychain",
+                category: "Others",
+                type: "Accessories",
+                price: 12.99,
+                rating: 4.6,
+                reviews: 67,
+                emoji: "🐸",
+                img: "",
+                featured: true,
+                desc: "Adorable enamel keychain featuring Keroppi holding his favorite striped mini umbrella."
+            },
+            {
+                id: 8,
+                name: "Hello Kitty Ceramic Tea Mug & Saucer",
+                category: "Hello Kitty",
+                type: "Home Decor",
+                price: 22.00,
+                rating: 4.8,
+                reviews: 76,
+                emoji: "☕",
+                img: "",
+                featured: false,
+                desc: "Hand-glazed ceramic tea cup featuring Hello Kitty face imprint with matching saucer and gold spoon."
+            },
+            {
+                id: 9,
+                name: "Cinnamoroll Sky Blue LED Night Light",
+                category: "Cinnamoroll",
+                type: "Home Decor",
+                price: 29.99,
+                rating: 4.9,
+                reviews: 155,
+                emoji: "🌙",
+                img: "",
+                featured: false,
+                desc: "Soothing silicone touch lamp shaped like Cinnamoroll resting on a crescent moon. Features adjustable soft glow brightness."
+            },
+            {
+                id: 10,
+                name: "Kuromi Punk Crossbody Bag",
+                category: "Kuromi",
+                type: "Apparel",
+                price: 36.99,
+                rating: 4.7,
+                reviews: 89,
+                emoji: "👛",
+                img: "",
+                featured: false,
+                desc: "Faux leather heart-shaped crossbody purse with purple ribbon accents and Kuromi metallic charm zipper."
+            },
+            {
+                id: 11,
+                name: "My Melody Floral Tote Bag",
+                category: "My Melody",
+                type: "Apparel",
+                price: 21.99,
+                rating: 4.8,
+                reviews: 112,
+                emoji: "👜",
+                img: "",
+                featured: false,
+                desc: "Durable canvas tote bag featuring My Melody surrounded by pink tulips. Perfect for school, shopping, or picnics."
+            },
+            {
+                id: 12,
+                name: "Pochacco Sporty Water Bottle",
+                category: "Others",
+                type: "Home Decor",
+                price: 19.50,
+                rating: 4.8,
+                reviews: 52,
+                emoji: "🐶",
+                img: "",
+                featured: false,
+                desc: "BPA-free pastel green water bottle featuring Pochacco jogging and staying hydrated."
+            }
+        ];
+
+        // State variables
+        let cart = [];
+        let wishlist = [];
+        let orders = []; // Customer orders list
+        let currentFilter = 'All';
+        let currentSearchQuery = '';
+        let currentSort = 'featured';
+        let activeModalProduct = null;
+        let modalQtyCount = 1;
+
+        // Initialize App on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            updateCartBadge();
+            updateWishlistBadge();
+            updateOrderBadge();
+        });
+
+        // Filter Products by Category or Character
+        function filterCategory(category) {
+            currentFilter = category;
+            
+            // Update active pill styling
+            document.querySelectorAll('.filter-pill').forEach(pill => {
+                pill.classList.remove('bg-pink-400', 'text-white', 'shadow-sm');
+                pill.classList.add('bg-white', 'text-gray-700', 'border', 'border-pink-200');
+            });
+            const activePill = document.getElementById(`pill-${category}`);
+            if (activePill) {
+                activePill.classList.remove('bg-white', 'text-gray-700', 'border', 'border-pink-200');
+                activePill.classList.add('bg-pink-400', 'text-white', 'shadow-sm');
+            }
+
+            // Update header title
+            document.getElementById('categoryTitle').textContent = category === 'All' ? 'All Sanrio Products' : `${category} Collection`;
+            renderProducts();
+        }
+
+        // Handle Search Input
+        function handleSearch(e) {
+            currentSearchQuery = e.target.value.toLowerCase().trim();
+            renderProducts();
+        }
+
+        // Handle Sorting
+        function handleSort(e) {
+            currentSort = e.target.value;
+            renderProducts();
+        }
+
+        // Render Products to Grid
+        function renderProducts() {
+            let filtered = products.filter(product => {
+                const matchesCategory = currentFilter === 'All' || 
+                                      product.category === currentFilter || 
+                                      product.type === currentFilter;
+                const matchesSearch = product.name.toLowerCase().includes(currentSearchQuery) ||
+                                      product.desc.toLowerCase().includes(currentSearchQuery) ||
+                                      product.category.toLowerCase().includes(currentSearchQuery);
+                return matchesCategory && matchesSearch;
+            });
+
+            // Sorting logic
+            if (currentSort === 'price-low') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (currentSort === 'price-high') {
+                filtered.sort((a, b) => b.price - a.price);
+            } else if (currentSort === 'rating') {
+                filtered.sort((a, b) => b.rating - a.rating);
+            }
+
+            const grid = document.getElementById('productGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countText = document.getElementById('productCountText');
+
+            countText.textContent = `Showing ${filtered.length} kawaii items`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filtered.map(product => {
+                const imageHTML = product.img && product.img.trim() !== '' 
+                    ? `<img src="${product.img}" alt="${product.name}" class="w-full h-full object-cover rounded-2xl" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'text-7xl\\'>${product.emoji}</span>';">`
+                    : `<span class="text-7xl">${product.emoji}</span>`;
+
+                return `
+                    <div class="bg-white rounded-3xl p-5 border border-pink-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative">
+                        <!-- Wishlist Heart Button -->
+                        <button onclick="event.stopPropagation(); toggleWishlist(${product.id})" class="absolute top-4 right-4 z-10 w-9 h-9 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-pink-400 shadow-xs transition-transform active:scale-90">
+                            <i class="fa-${wishlist.includes(product.id) ? 'solid' : 'regular'} fa-heart"></i>
+                        </button>
+
+                        <!-- Card Image Container -->
+                        <div onclick="openProductModal(${product.id})" class="w-full h-48 bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl flex items-center justify-center cursor-pointer group-hover:scale-105 transition-transform duration-300 mb-4 select-none overflow-hidden">
+                            ${imageHTML}
+                        </div>
+
+                        <!-- Details -->
+                        <div onclick="openProductModal(${product.id})" class="cursor-pointer flex-grow">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-pink-500 bg-pink-50 px-2.5 py-0.5 rounded-full">${product.category}</span>
+                                <div class="flex items-center text-amber-400 text-xs font-semibold">
+                                    <i class="fa-solid fa-star mr-1"></i>
+                                    <span class="text-gray-700">${product.rating}</span>
+                                </div>
+                            </div>
+                            <h4 class="font-display font-semibold text-gray-800 text-base mb-1 group-hover:text-pink-600 transition-colors line-clamp-1">${product.name}</h4>
+                            <p class="text-xs text-gray-500 mb-4 line-clamp-2">${product.desc}</p>
+                        </div>
+
+                        <!-- Price & Add to Cart -->
+                        <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                            <div>
+                                <span class="text-xs text-gray-400 block">Price</span>
+                                <span class="font-display font-bold text-lg text-gray-800">$${product.price.toFixed(2)}</span>
+                            </div>
+                            <button onclick="addToCart(${product.id})" class="bg-pink-400 hover:bg-pink-500 text-white p-3 rounded-2xl shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center">
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Add to Cart
+        function addToCart(productId, quantity = 1) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.quantity += quantity;
+            } else {
+                cart.push({ ...product, quantity: quantity });
+            }
+
+            updateCartBadge();
+            renderCartItems();
+            showToast('Added to Cart! 🛍️', `${product.name} (x${quantity}) added successfully.`);
+        }
+
+        // Update Cart Badge count
+        function updateCartBadge() {
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalCount;
+        }
+
+        function updateOrderBadge() {
+            document.getElementById('orderBadge').textContent = orders.length;
+            document.getElementById('adminOrderCount').textContent = orders.length;
+        }
+
+        // Toggle Cart Drawer
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('cartOverlay');
+            
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                renderCartItems();
+            } else {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        // Render Cart Items inside Drawer
+        function renderCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16">
+                        <div class="text-5xl mb-3">🛒</div>
+                        <h4 class="font-display font-semibold text-gray-700">Your cart is empty</h4>
+                        <p class="text-xs text-gray-400 mt-1">Add some cute Sanrio items to get started!</p>
+                    </div>
+                `;
+                document.getElementById('cartSubtotal').textContent = '$0.00';
+                document.getElementById('cartTotal').textContent = '$0.00';
+                return;
+            }
+
+            let subtotal = 0;
+            container.innerHTML = cart.map(item => {
+                subtotal += item.price * item.quantity;
+                const iconHTML = item.img && item.img.trim() !== ''
+                    ? `<img src="${item.img}" class="w-full h-full object-cover rounded-xl" onerror="this.parentElement.innerHTML='${item.emoji}';">`
+                    : item.emoji;
+
+                return `
+                    <div class="flex items-center space-x-4 bg-pink-50/40 p-4 rounded-2xl border border-pink-100">
+                        <div class="w-16 h-16 bg-white rounded-xl flex items-center justify-center text-3xl shadow-xs shrink-0 overflow-hidden">
+                            ${iconHTML}
+                        </div>
+                        <div class="flex-grow">
+                            <h5 class="font-display font-semibold text-sm text-gray-800 line-clamp-1">${item.name}</h5>
+                            <span class="text-xs text-pink-500 font-bold">$${item.price.toFixed(2)}</span>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 bg-white rounded-md border border-gray-200 text-gray-600 text-xs font-bold flex items-center justify-center hover:bg-gray-100">-</button>
+                                <span class="text-xs font-semibold text-gray-800">${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 bg-white rounded-md border border-gray-200 text-gray-600 text-xs font-bold flex items-center justify-center hover:bg-gray-100">+</button>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-gray-400 hover:text-red-500 p-2 transition-colors">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cartTotal').textContent = `$${subtotal.toFixed(2)}`;
+        }
+
+        // Update Item Quantity in Cart
+        function updateQuantity(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (!item) return;
+
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.id !== productId);
+            }
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        // Remove Item from Cart
+        function removeFromCart(productId) {
+            cart = cart.filter(i => i.id !== productId);
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        // Toggle Admin Studio Modal
+        function toggleAdminModal() {
+            renderAdminOrders();
+            renderAdminProducts();
+            const modal = document.getElementById('adminModal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.querySelector('div').classList.remove('scale-95');
+                }, 10);
+            } else {
+                modal.classList.add('opacity-0');
+                modal.querySelector('div').classList.add('scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+
+        // Switch Admin Tabs
+        function switchAdminTab(tab) {
+            const btnOrders = document.getElementById('adminTabOrders');
+            const btnProducts = document.getElementById('adminTabProducts');
+            const panelOrders = document.getElementById('adminPanelOrders');
+            const panelProducts = document.getElementById('adminPanelProducts');
+
+            if (tab === 'orders') {
+                btnOrders.className = "pb-3 text-sm font-display font-bold text-purple-600 border-b-2 border-purple-600 transition-all";
+                btnProducts.className = "pb-3 text-sm font-display font-semibold text-gray-500 hover:text-gray-800 transition-all";
+                panelOrders.classList.remove('hidden');
+                panelProducts.classList.add('hidden');
+                renderAdminOrders();
+            } else {
+                btnProducts.className = "pb-3 text-sm font-display font-bold text-purple-600 border-b-2 border-purple-600 transition-all";
+                btnOrders.className = "pb-3 text-sm font-display font-semibold text-gray-500 hover:text-gray-800 transition-all";
+                panelProducts.classList.remove('hidden');
+                panelOrders.classList.add('hidden');
+                renderAdminProducts();
+            }
+        }
+
+        // Render Admin Orders List
+        function renderAdminOrders() {
+            const container = document.getElementById('adminPanelOrders');
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16">
+                        <div class="text-5xl mb-3">📭</div>
+                        <h4 class="font-display font-semibold text-gray-700">No customer orders yet</h4>
+                        <p class="text-xs text-gray-400 mt-1">Completed store checkouts will appear here instantly.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = orders.map(ord => `
+                <div class="bg-purple-50/40 border border-purple-100 rounded-2xl p-5 shadow-xs">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-3 border-b border-purple-100 mb-3 gap-2">
+                        <div>
+                            <span class="font-display font-bold text-purple-700 text-lg">${ord.id}</span>
+                            <span class="text-xs text-gray-400 ml-2">📅 ${ord.timestamp}</span>
+                        </div>
+                        <span class="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full">Total: $${ord.total.toFixed(2)}</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+                        <div class="bg-white p-3 rounded-xl border border-purple-50">
+                            <span class="text-xs font-bold text-purple-600 uppercase block mb-1">Customer Info</span>
+                            <p class="font-semibold text-gray-800">${ord.customer.name}</p>
+                            <p class="text-xs text-gray-500">${ord.customer.email}</p>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-purple-50">
+                            <span class="text-xs font-bold text-purple-600 uppercase block mb-1">Shipping Address</span>
+                            <p class="text-xs text-gray-700">${ord.customer.address}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-gray-500 uppercase block mb-2">Ordered Items (${ord.items.reduce((s, i) => s + i.quantity, 0)})</span>
+                        <div class="space-y-2">
+                            ${ord.items.map(item => `
+                                <div class="flex items-center justify-between bg-white px-4 py-2 rounded-xl text-xs border border-gray-100">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-xl">${item.emoji}</span>
+                                        <div>
+                                            <span class="font-semibold text-gray-800">${item.name}</span>
+                                            <span class="text-gray-400 block">Qty: ${item.quantity} × $${item.price.toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold text-gray-800">$${(item.price * item.quantity).toFixed(2)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render Admin Products List for editing
+        function renderAdminProducts() {
+            const container = document.getElementById('adminProductList');
+            container.innerHTML = products.map(p => `
+                <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-purple-100 text-sm">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-pink-50 rounded-lg flex items-center justify-center text-xl overflow-hidden shrink-0">
+                            ${p.img ? `<img src="${p.img}" class="w-full h-full object-cover">` : p.emoji}
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-gray-800 line-clamp-1">${p.name}</h5>
+                            <span class="text-xs text-pink-500 font-bold">$${p.price.toFixed(2)} • <span class="text-gray-400">${p.category}</span></span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="openEditProductForm(${p.id})" class="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-lg transition-colors">
+                            <i class="fa-solid fa-pen mr-1"></i> Edit
+                        </button>
+                        <button onclick="deleteProduct(${p.id})" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg transition-colors">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openNewProductForm() {
+            document.getElementById('editModalTitle').textContent = 'Add New Kawaii Product';
+            document.getElementById('editProdId').value = '';
+            document.getElementById('editProdName').value = '';
+            document.getElementById('editProdImg').value = '';
+            document.getElementById('editProdEmoji').value = '🎀';
+            document.getElementById('editProdCategory').value = 'Hello Kitty';
+            document.getElementById('editProdPrice').value = '19.99';
+            document.getElementById('editProdDesc').value = 'Official Sanrio merchandise item.';
+            document.getElementById('editProductModal').classList.remove('hidden');
+        }
+
+        function openEditProductForm(productId) {
+            const p = products.find(item => item.id === productId);
+            if (!p) return;
+
+            document.getElementById('editModalTitle').textContent = 'Edit Product & Image';
+            document.getElementById('editProdId').value = p.id;
+            document.getElementById('editProdName').value = p.name;
+            document.getElementById('editProdImg').value = p.img || '';
+            document.getElementById('editProdEmoji').value = p.emoji;
+            document.getElementById('editProdCategory').value = p.category;
+            document.getElementById('editProdPrice').value = p.price;
+            document.getElementById('editProdDesc').value = p.desc;
+            document.getElementById('editProductModal').classList.remove('hidden');
+        }
+
+        function closeEditProductModal() {
+            document.getElementById('editProductModal').classList.add('hidden');
+        }
+
+        function saveProductChanges(e) {
+            e.preventDefault();
+            const id = document.getElementById('editProdId').value;
+            const name = document.getElementById('editProdName').value;
+            const img = document.getElementById('editProdImg').value;
+            const emoji = document.getElementById('editProdEmoji').value;
+            const category = document.getElementById('editProdCategory').value;
+            const price = parseFloat(document.getElementById('editProdPrice').value);
+            const desc = document.getElementById('editProdDesc').value;
+
+            if (id) {
+                // Edit existing
+                const p = products.find(item => item.id == id);
+                if (p) {
+                    p.name = name;
+                    p.img = img;
+                    p.emoji = emoji;
+                    p.category = category;
+                    p.price = price;
+                    p.desc = desc;
+                }
+                showToast('Product Updated! ✨', `${name} has been successfully updated.`);
+            } else {
+                // Create new
+                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                products.unshift({
+                    id: newId,
+                    name,
+                    img,
+                    emoji,
+                    category,
+                    type: 'Plushies',
+                    price,
+                    rating: 5.0,
+                    reviews: 1,
+                    featured: true,
+                    desc
+                });
+                showToast('Product Created! 🎀', `${name} added to catalog successfully.`);
+            }
+
+            closeEditProductModal();
+            renderProducts();
+            renderAdminProducts();
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                products = products.filter(p => p.id !== productId);
+                renderProducts();
+                renderAdminProducts();
+                showToast('Product Deleted', 'Item removed from store catalog.', '🗑️');
+            }
+        }
+
+        function clearAllOrders() {
+            if (confirm('Are you sure you want to clear all customer orders history?')) {
+                orders = [];
+                updateOrderBadge();
+                renderAdminOrders();
+            }
+        }
+
+        // Wishlist Toggle
+// ... existing code ...
